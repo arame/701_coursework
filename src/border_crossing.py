@@ -9,10 +9,10 @@ from files import Files
 from local_time import LocalTime
 
 t = LocalTime()
-print("test")
-print("---------------------------------------------------------")
+
+print("=========================================================")
 print("Local current time started :", t.localtime)
-print("---------------------------------------------------------")
+print("=========================================================")
 inputFile = "Border_Crossing_Entry_Data.csv"
 f = Files(inputFile)
 data = pd.read_csv(f.file_path)
