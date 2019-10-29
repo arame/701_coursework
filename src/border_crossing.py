@@ -9,6 +9,7 @@ from files import Files
 from local_time import LocalTime
 
 t = LocalTime()
+print("test")
 print("---------------------------------------------------------")
 print("Local current time started :", t.localtime)
 print("---------------------------------------------------------")
