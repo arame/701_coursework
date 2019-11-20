@@ -7,7 +7,7 @@ import seaborn as sns
 
 class Datalook:
     def __init__(self, twitter):
-        self.twitter = self.twitter
+        self.twitter = twitter
 
     def show(self):
         print("self.twitter: ")
@@ -68,5 +68,5 @@ class Datalook:
                 ]
             }
         }
-        iplot(fig)
+        #iplot(fig)
         cnt_
