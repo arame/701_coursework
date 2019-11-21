@@ -11,7 +11,8 @@ import seaborn as sns
 from datalook import Datalook
 from files import Files
 from local_time import LocalTime
-
+for i in range(10):
+    print()
 t = LocalTime()
 print("=========================================================")
 print("Local current time started :", t.localtime)
@@ -23,9 +24,7 @@ geocode_file = "location_geocode.csv"
 f2 = Files(geocode_file)
 geocodes = pd.read_csv(f2.file_path)
 twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
-twitter = twitter.drop('name',axis =1)
-#lets check for null values
-twitter.isnull().mean()*100
+twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
 #data = Datalook(twitter)
 #data.show()
 stopword_file = 'long_stopwords.txt'

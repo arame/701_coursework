@@ -10,6 +10,8 @@ class Datalook:
         self.twitter = twitter
 
     def show(self):
+        #lets check for null values
+        self.twitter.isnull().mean()*100 
         print("self.twitter: ")
         print(self.twitter.head())
         print(f" Data Available since {self.twitter.created_at.min()}")
