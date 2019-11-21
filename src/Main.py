@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 import gensim
 from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
@@ -11,8 +13,8 @@ import seaborn as sns
 from datalook import Datalook
 from files import Files
 from local_time import LocalTime
-for i in range(10):
-    print()
+
+print('\n' * 10)
 t = LocalTime()
 print("=========================================================")
 print("Local current time started :", t.localtime)
@@ -33,7 +35,22 @@ with open(f3.file_path,'r') as inpFile:
     lines = inpFile.readlines()
     stop_words_temp = map(lambda x : re.sub('\n','',x),lines)
     stop_words = list(map(lambda x:  re.sub('[^A-Za-z0-9]+', '',x), stop_words_temp))
-    print(stop_words)
+    #print(stop_words)
+
+wordcloud1 = WordCloud(
+                          background_color='white',
+                          stopwords=set(STOPWORDS),
+                          max_words=250,
+                          max_font_size=40, 
+                          random_state=1705
+                         ).generate(str(twitter['user_screen_name'].dropna()))
+def cloud_plot(wordcloud):
+    fig = plt.figure(1, figsize=(20,15))
+    plt.imshow(wordcloud)
+    plt.axis('off')
+    plt.show()
+cloud_plot(wordcloud1)
+
 t = LocalTime()
 print("=========================================================")
 print("Local current time completed :", t.localtime)
