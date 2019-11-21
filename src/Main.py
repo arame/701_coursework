@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
-from PIL import Image
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-import gensim
+#from wordcloud1 import Wordcloud1
 from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
 import re
@@ -13,6 +11,9 @@ import seaborn as sns
 from datalook import Datalook
 from files import Files
 from local_time import LocalTime
+from nltk.corpus import stopwords
+eng_stopwords = set(stopwords.words("english"))
+from wordcloud import WordCloud, STOPWORDS
 
 print('\n' * 10)
 t = LocalTime()
@@ -37,19 +38,14 @@ with open(f3.file_path,'r') as inpFile:
     stop_words = list(map(lambda x:  re.sub('[^A-Za-z0-9]+', '',x), stop_words_temp))
     #print(stop_words)
 
-wordcloud1 = WordCloud(
-                          background_color='white',
-                          stopwords=set(STOPWORDS),
-                          max_words=250,
-                          max_font_size=40, 
-                          random_state=1705
-                         ).generate(str(twitter['user_screen_name'].dropna()))
-def cloud_plot(wordcloud):
-    fig = plt.figure(1, figsize=(20,15))
-    plt.imshow(wordcloud)
-    plt.axis('off')
-    plt.show()
-cloud_plot(wordcloud1)
+#Wordcloud1.show(twitter, 'user_description')
+
+twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
+print("5 random tweets with highest positive sentiment polarity: \n")
+cL = twitter.loc[twitter.sentiment==1, ['full_text']].sample(5).values
+for c in cL:
+    print(c[0])
+    print()
 
 t = LocalTime()
 print("=========================================================")
