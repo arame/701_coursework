@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-#from wordcloud1 import Wordcloud1
+from wordcloud1 import Wordcloudz
 from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
 import re
@@ -11,8 +11,12 @@ import seaborn as sns
 from datalook import Datalook
 from files import Files
 from local_time import LocalTime
+from textblob import TextBlob
+import nltk
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 eng_stopwords = set(stopwords.words("english"))
+
 from wordcloud import WordCloud, STOPWORDS
 
 print('\n' * 10)
@@ -38,7 +42,7 @@ with open(f3.file_path,'r') as inpFile:
     stop_words = list(map(lambda x:  re.sub('[^A-Za-z0-9]+', '',x), stop_words_temp))
     #print(stop_words)
 
-#Wordcloud1.show(twitter, 'user_description')
+Wordcloudz.show(twitter, 'user_description')
 
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 print("5 random tweets with highest positive sentiment polarity: \n")
