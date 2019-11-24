@@ -7,7 +7,7 @@ class Wordcloudz:
 
     @staticmethod
     def cloud_plot(wordcloud1):
-        fig = plt.figure(1, figsize=(20,15))
+        plt.figure(1, figsize=(20,15))
         plt.imshow(wordcloud1)
         plt.axis('off')
         plt.show()

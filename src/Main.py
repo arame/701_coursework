@@ -3,6 +3,7 @@ import pandas as pd
 from wordcloud1 import Wordcloudz
 from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
+from sklearn.feature_extraction.text import CountVectorizer
 import re
 import matplotlib                  # 2D Plotting Library
 import matplotlib.pyplot as plt
@@ -34,19 +35,20 @@ twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
 #data = Datalook(twitter)
 #data.show()
-stopword_file = 'long_stopwords.txt'
-f3 = Files(stopword_file)
-with open(f3.file_path,'r') as inpFile:
-    lines = inpFile.readlines()
-    stop_words_temp = map(lambda x : re.sub('\n','',x),lines)
-    stop_words = list(map(lambda x:  re.sub('[^A-Za-z0-9]+', '',x), stop_words_temp))
+#stopword_file = 'long_stopwords.txt'
+#f3 = Files(stopword_file)
+#with open(f3.file_path,'r') as inpFile:
+    #lines = inpFile.readlines()
+    #stop_words_temp = map(lambda x : re.sub('\n','',x),lines)
+    #stop_words = list(map(lambda x:  re.sub('[^A-Za-z0-9]+', '',x), stop_words_temp))
     #print(stop_words)
 
-Wordcloudz.show(twitter, 'user_description')
-
+#Wordcloudz.show(twitter, 'user_description')
+print("Stop words")
+print(eng_stopwords)
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 print("5 random tweets with highest positive sentiment polarity: \n")
-cL = twitter.loc[twitter.sentiment==1, ['full_text']].sample(5).values
+cL = twitter.loc[twitter.sentiment==0, ['full_text']].sample(5).values
 for c in cL:
     print(c[0])
     print()
