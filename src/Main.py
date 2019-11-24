@@ -4,6 +4,8 @@ from wordcloud1 import Wordcloudz
 from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn import datasets, linear_model
+from sklearn.model_selection import train_test_split
 import re
 import matplotlib                  # 2D Plotting Library
 import matplotlib.pyplot as plt
@@ -33,6 +35,8 @@ f2 = Files(geocode_file)
 geocodes = pd.read_csv(f2.file_path)
 twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
+#df = pd.DataFrame(twitter)
+y = twitter.target
 #data = Datalook(twitter)
 #data.show()
 #stopword_file = 'long_stopwords.txt'
