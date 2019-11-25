@@ -43,17 +43,31 @@ print(LocalTime().localtime, "files merged")
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 print(LocalTime().localtime, "5 random tweets with highest positive sentiment polarity: \n")
 cL = twitter.loc[twitter.sentiment==1, ['full_text']].sample(5).values
-sentences = []
+positive_sentences = []
 for c in cL:
     print(c[0])
     print()
+
+cL = twitter.loc[twitter.sentiment==1, ['full_text']].values
 for c in cL:
     words = c[0].split()
-    words = map(lambda x: Word_Processing1.clean_word(x), words)
+    words = map(lambda x: Word_Processing1.clean_word(x), words) # Remove "stop" words that do not influence sentiment
     words = list(filter(lambda x:True if len(x) > 0 else False, words))
-    sentences.append(words)
+    positive_sentences.append(words)
+
 print("-----------------------")
-print(len(sentences))
+print(LocalTime().localtime, "number of positive sentiments = ", len(positive_sentences))
+
+negative_sentences = []
+cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
+for c in cL:
+    words = c[0].split()
+    words = map(lambda x: Word_Processing1.clean_word(x), words) # Remove "stop" words that do not influence sentiment
+    words = list(filter(lambda x:True if len(x) > 0 else False, words))
+    negative_sentences.append(words)
+
+print("-----------------------")
+print(LocalTime().localtime, "number of negative sentiments = ", len(negative_sentences))
 
 t = LocalTime()
 print("=========================================================")
