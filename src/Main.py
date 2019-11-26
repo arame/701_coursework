@@ -56,7 +56,7 @@ for c in cL:
     positive_sentences.append(words)
 
 print("-----------------------")
-print(LocalTime().localtime, "number of positive sentiments = ", len(positive_sentences))
+print(LocalTime().localtime, "Number of positive sentiments = ", len(positive_sentences))
 
 negative_sentences = []
 cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
@@ -67,8 +67,23 @@ for c in cL:
     negative_sentences.append(words)
 
 print("-----------------------")
-print(LocalTime().localtime, "number of negative sentiments = ", len(negative_sentences))
-
+print(LocalTime().localtime, "Number of negative sentiments = ", len(negative_sentences))
+count_of_tweets = len(twitter)
+count_of_retweets = np.sum(twitter.retweet_count)
+print(f"Total number of tweets = ", count_of_tweets)
+print(f"Total number of retweets = ", count_of_retweets)
+print(f"Average number of retweets per tweet = ", count_of_retweets / count_of_tweets)
+tweets_retweeted = twitter.apply(lambda x:True if x["retweet_count"] > 0 else False, axis = 1)
+count_of_tweets_retweeted = len(tweets_retweeted[tweets_retweeted == True])
+print(f"% of tweets retweeted = ", ( count_of_tweets_retweeted / count_of_tweets) * 100)
+print(f"Number of tweets retweeted = ", count_of_tweets_retweeted)
+print(f" Maximum number of retweets {twitter.retweet_count.max()}")
+print()
+print(f" Maximum number of favorites {twitter.favorite_count.max()}")
+print("-----------------------")
+print(f"Most retweeted: ", twitter.loc[twitter['retweet_count']==6622.0,'full_text'].values)
+print("-----------------------")
+print(f"Most favourited: ",twitter.loc[twitter['favorite_count']==15559.0,['full_text','user_name','user_description']].values)
 t = LocalTime()
 print("=========================================================")
 print("Local current time completed :", t.localtime)
