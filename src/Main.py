@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn import datasets, linear_model
 from sklearn.model_selection import train_test_split
 import re
-import matplotlib                  # 2D Plotting Library
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as mgrid
 import seaborn as sns  
@@ -35,6 +35,12 @@ print(LocalTime().localtime, geocode_file, " read")
 geocodes = pd.read_csv(f2.file_path)
 twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
+# create training and testing vars
+train, test = train_test_split(twitter, test_size=0.2)
+print("-----------------------")
+print("Train data = ", train.shape)
+print("Test data = ", test.shape)
+print("-----------------------")
 print(LocalTime().localtime, "files merged")
 #data = Datalook(twitter)
 #data.show()
@@ -55,8 +61,10 @@ for c in cL:
     words = list(filter(lambda x:True if len(x) > 0 else False, words))
     positive_sentences.append(words)
 
+number_positive = len(positive_sentences)
+percentage_positive = "which is {0:.2f}% of all tweets".format((number_positive / len(twitter)) * 100)
 print("-----------------------")
-print(LocalTime().localtime, "Number of positive sentiments = ", len(positive_sentences))
+print(LocalTime().localtime, "Number of positive sentiments = ", number_positive, percentage_positive)
 
 negative_sentences = []
 cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
@@ -66,8 +74,11 @@ for c in cL:
     words = list(filter(lambda x:True if len(x) > 0 else False, words))
     negative_sentences.append(words)
 
+number_negative = len(negative_sentences)
+percentage_negative = "which is {0:.2f}% of all tweets".format((number_negative / len(twitter)) * 100)
 print("-----------------------")
-print(LocalTime().localtime, "Number of negative sentiments = ", len(negative_sentences))
+print(LocalTime().localtime, "Number of negative sentiments = ", number_negative, percentage_negative)
+print("-----------------------")
 count_of_tweets = len(twitter)
 count_of_retweets = np.sum(twitter.retweet_count)
 print(f"Total number of tweets = ", count_of_tweets)
@@ -78,7 +89,6 @@ count_of_tweets_retweeted = len(tweets_retweeted[tweets_retweeted == True])
 print(f"% of tweets retweeted = ", ( count_of_tweets_retweeted / count_of_tweets) * 100)
 print(f"Number of tweets retweeted = ", count_of_tweets_retweeted)
 print(f" Maximum number of retweets {twitter.retweet_count.max()}")
-print()
 print(f" Maximum number of favorites {twitter.favorite_count.max()}")
 print("-----------------------")
 print(f"Most retweeted: ", twitter.loc[twitter['retweet_count']==6622.0,'full_text'].values)
