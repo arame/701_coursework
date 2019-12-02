@@ -37,17 +37,22 @@ geocodes = pd.read_csv(f2.file_path)
 twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
-# TODO fix this
+#twitter1 = [x for x in twitter if x['sentiment'] == 0]
 twitter1 = []
-for t in twitter:
-    if t['sentiment'] == 0:
-        continue
-    elif t['sentiment']  > 0:
-        t['sentiment']  = 1
-        twitter1.append(t)
+i = -1
+for x in twitter['sentiment']:
+    i = i + 1
+    if x != 0:
+        twitter1.append(twitter[i])
+# TODO fix this
+target = []
+i = -1
+for t in twitter1['sentiment']:
+    i = i + 1
+    if t > 0:
+        target.append(1)
     else:
-        t['sentiment']  = 0
-        twitter1.append(t)
+        target.append(0)
 
 #target = twitter['sentiment'](filter(lambda x:math.ceil(x) if x > 0 else math.floor(x), target))
 #words = list(filter(lambda x:True if len(x) > 0 else False, words))
