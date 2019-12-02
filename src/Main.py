@@ -6,8 +6,11 @@ from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn import datasets, linear_model
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import re
+import math
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as mgrid
@@ -15,6 +18,7 @@ import seaborn as sns
 from datalook import Datalook
 from files import Files
 from local_time import LocalTime
+from sentences1 import Sentences1
 from textblob import TextBlob
 from wordcloud import WordCloud, STOPWORDS
 
@@ -32,14 +36,40 @@ print(LocalTime.get(), geocode_file, " read")
 geocodes = pd.read_csv(f2.file_path)
 twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
+twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
+# TODO fix this
+twitter1 = []
+for t in twitter:
+    if t['sentiment'] == 0:
+        continue
+    elif t['sentiment']  > 0:
+        t['sentiment']  = 1
+        twitter1.append(t)
+    else:
+        t['sentiment']  = 0
+        twitter1.append(t)
+
+#target = twitter['sentiment'](filter(lambda x:math.ceil(x) if x > 0 else math.floor(x), target))
+#words = list(filter(lambda x:True if len(x) > 0 else False, words))
 print(LocalTime.get(), "files merged")
-# create training and testing vars
+####### split the dataset in 2, 80% as training data and 20% as testing data
 train, test = train_test_split(twitter, test_size=0.2)
 print("-----------------------")
 print("Train data = ", train.shape)
 print("Test data = ", test.shape)
 print("-----------------------")
+######## Vectorise the train and test datasets
+cv = CountVectorizer(binary=True)
+cv.fit(train)
+X = cv.transform(train)
+X_test = cv.transform(test)
+######## Build the classifiers
+twitter_rows = twitter.shape[0]
+print("twitter number of rows = ", twitter_rows)
 
+#X_train, X_val, y_train, y_val = train_test_split(
+#    X, target, train_size = 0.75
+#)
 #data = Datalook(twitter)
 #data.show()
 
@@ -47,36 +77,32 @@ print("-----------------------")
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 print(LocalTime.get(), "5 random tweets with highest positive sentiment polarity: \n")
 cL = twitter.loc[twitter.sentiment==1, ['full_text']].sample(5).values
-positive_sentences = []
 for c in cL:
     print(c[0])
     print()
 
-cL = twitter.loc[twitter.sentiment==1, ['full_text']].values
-for c in cL:
-    words = c[0].split()
-    words = map(lambda x: Word_Processing1.clean_word(x), words) # Remove "stop" words that do not influence sentiment
-    words = list(filter(lambda x:True if len(x) > 0 else False, words))
-    positive_sentences.append(words)
-
+cL = twitter.loc[twitter.sentiment >0, ['full_text']].values
+positive_sentences = Sentences1.filter(cL)
 number_positive = len(positive_sentences)
 percentage_positive = "which is {0:.2f}% of all tweets".format((number_positive / len(twitter)) * 100)
 print("-----------------------")
 print(LocalTime.get(), "Number of positive sentiments = ", number_positive, percentage_positive)
 
-negative_sentences = []
-cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
-for c in cL:
-    words = c[0].split()
-    words = map(lambda x: Word_Processing1.clean_word(x), words) # Remove "stop" words that do not influence sentiment
-    words = list(filter(lambda x:True if len(x) > 0 else False, words))
-    negative_sentences.append(words)
-
+cL = twitter.loc[twitter.sentiment < 0, ['full_text']].values
+negative_sentences = Sentences1.filter(cL)
 number_negative = len(negative_sentences)
 percentage_negative = "which is {0:.2f}% of all tweets".format((number_negative / len(twitter)) * 100)
 print("-----------------------")
 print(LocalTime.get(), "Number of negative sentiments = ", number_negative, percentage_negative)
+
+cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
+neutral_sentences = Sentences1.filter(cL)
+number_neutral = len(neutral_sentences)
+percentage_neutral = "which is {0:.2f}% of all tweets".format((number_neutral / len(twitter)) * 100)
 print("-----------------------")
+print(LocalTime.get(), "Number of neutral sentiments = ", number_neutral, percentage_neutral)
+print("-----------------------")
+
 count_of_tweets = len(twitter)
 count_of_retweets = np.sum(twitter.retweet_count)
 print(f"Total number of tweets = ", count_of_tweets)
