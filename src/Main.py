@@ -37,29 +37,16 @@ geocodes = pd.read_csv(f2.file_path)
 twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
-#twitter1 = [x for x in twitter if x['sentiment'] == 0]
-twitter1 = []
-i = -1
-for x in twitter['sentiment']:
-    i = i + 1
-    if x != 0:
-        twitter1.append(twitter[i])
-# TODO fix this
-target = []
-i = -1
-for t in twitter1['sentiment']:
-    i = i + 1
-    if t > 0:
-        target.append(1)
-    else:
-        target.append(0)
 
-#target = twitter['sentiment'](filter(lambda x:math.ceil(x) if x > 0 else math.floor(x), target))
-#words = list(filter(lambda x:True if len(x) > 0 else False, words))
-print(LocalTime.get(), "files merged")
+##### Remove neutral sentiments 
+twitter1 = twitter[twitter.sentiment != 0]
+####### Set targets to 1 for positive sentiment and 0 for negative sentiment
+target = np.where(twitter1.sentiment > 0, 1, 0)
+print(LocalTime.get(), "files merged and sentiment rating calculated")
 ####### split the dataset in 2, 80% as training data and 20% as testing data
-train, test = train_test_split(twitter, test_size=0.2)
+train, test = train_test_split(twitter1, test_size=0.2)
 print("-----------------------")
+print("Train and test data divided")
 print("Train data = ", train.shape)
 print("Test data = ", test.shape)
 print("-----------------------")
