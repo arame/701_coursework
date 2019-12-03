@@ -45,6 +45,10 @@ target = np.where(twitter1.sentiment > 0, 1, 0)
 print(LocalTime.get(), "files merged and sentiment rating calculated")
 ####### split the dataset in 2, 80% as training data and 20% as testing data
 train, test = train_test_split(twitter1, test_size=0.2)
+#train_text = Sentences1.filter(train['full_text'])
+#test_text = Sentences1.filter(test['full_text'])
+train_text = train['full_text']
+test_text = test['full_text']
 print("-----------------------")
 print("Train and test data divided")
 print("Train data = ", train.shape)
@@ -52,16 +56,23 @@ print("Test data = ", test.shape)
 print("-----------------------")
 ######## Vectorise the train and test datasets
 cv = CountVectorizer(binary=True)
-cv.fit(train)
-X = cv.transform(train)
-X_test = cv.transform(test)
+cv.fit(train_text)
+X = cv.transform(train_text)
+X_test = cv.transform(test_text)
 ######## Build the classifiers
 twitter_rows = twitter.shape[0]
 print("twitter number of rows = ", twitter_rows)
 
-#X_train, X_val, y_train, y_val = train_test_split(
-#    X, target, train_size = 0.75
-#)
+X_train, X_val, y_train, y_val = train_test_split(
+    X, target, train_size = 0.75
+)
+
+for c in [0.01, 0.05, 0.25, 0.5, 1]:
+    
+    lr = LogisticRegression(C=c)
+    lr.fit(X_train, y_train)
+    print ("---Accuracy for C=%s: %s" 
+           % (c, accuracy_score(y_val, lr.predict(X_val))))
 #data = Datalook(twitter)
 #data.show()
 
