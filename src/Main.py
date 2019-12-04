@@ -7,6 +7,7 @@ from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn import datasets, linear_model
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 import re
@@ -17,6 +18,8 @@ import matplotlib.gridspec as mgrid
 import seaborn as sns  
 from datalook import Datalook
 from files import Files
+from logistic_regression import Logistic_Regression
+from linear_svm import Linear_SVM
 from local_time import LocalTime
 from sentences1 import Sentences1
 from textblob import TextBlob
@@ -38,17 +41,20 @@ twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on
 twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 
+print("twitter number of rows = ", twitter.shape[0])
 ##### Remove neutral sentiments 
 twitter1 = twitter[twitter.sentiment != 0]
 ####### Set targets to 1 for positive sentiment and 0 for negative sentiment
-target = np.where(twitter1.sentiment > 0, 1, 0)
+
 print(LocalTime.get(), "files merged and sentiment rating calculated")
 ####### split the dataset in 2, 80% as training data and 20% as testing data
 train, test = train_test_split(twitter1, test_size=0.2)
-#train_text = Sentences1.filter(train['full_text'])
-#test_text = Sentences1.filter(test['full_text'])
-train_text = train['full_text']
-test_text = test['full_text']
+train_text = Sentences1.filter(train['full_text'])
+test_text = Sentences1.filter(test['full_text'])
+target = np.where(train.sentiment > 0, 1, 0)
+target_test = np.where(test.sentiment > 0, 1, 0)
+#train_text = train['full_text']
+#test_text = test['full_text']
 print("-----------------------")
 print("Train and test data divided")
 print("Train data = ", train.shape)
@@ -56,27 +62,75 @@ print("Test data = ", test.shape)
 print("-----------------------")
 ######## Vectorise the train and test datasets
 cv = CountVectorizer(binary=True)
-cv.fit(train_text)
-X = cv.transform(train_text)
+X = cv.fit_transform(train_text)
 X_test = cv.transform(test_text)
 ######## Build the classifiers
-twitter_rows = twitter.shape[0]
-print("twitter number of rows = ", twitter_rows)
-
 X_train, X_val, y_train, y_val = train_test_split(
     X, target, train_size = 0.75
 )
+print('\n' * 3)
+print("---------------------------------------------------")
+print(LocalTime.get(), "  Words selected report")
+print("---------------------------------------------------")
+best_c = Logistic_Regression.get_best_hyperparameter(X_train, y_train, y_val, X_val)
 
-for c in [0.01, 0.05, 0.25, 0.5, 1]:
-    
-    lr = LogisticRegression(C=c)
-    lr.fit(X_train, y_train)
-    print ("---Accuracy for C=%s: %s" 
-           % (c, accuracy_score(y_val, lr.predict(X_val))))
+final_model = LogisticRegression(C=best_c)
+final_model.fit(X, target)
+final_accuracy = final_model.predict(X_test)
+final_accuracy_score = accuracy_score(target_test, final_accuracy)
+print ("Final Accuracy: %s" % final_accuracy_score)
+
+feature_to_coef = {
+    word: coef for word, coef in zip(
+        cv.get_feature_names(), final_model.coef_[0]
+    )
+}
+print("-----------------------------------------------")
+print(LocalTime.get(), "--- Most popular positve words")
+for best_positive in sorted(
+    feature_to_coef.items(), 
+    key=lambda x: x[1], 
+    reverse=True)[:5]:
+    print (best_positive)
+print("-----------------------------------------------")
+print(LocalTime.get(), "--- Most popular negative words")
+for best_negative in sorted(
+    feature_to_coef.items(), 
+    key=lambda x: x[1])[:5]:
+    print (best_negative)
+
+print('\n' * 3)
+print("----------------------------------------------------------")
+print(LocalTime.get(), "  Words selected report: NGram")
+print("----------------------------------------------------------")
+ngram_vectorizer = CountVectorizer(binary=True, ngram_range=(1, 2))
+X = ngram_vectorizer.fit_transform(train_text)
+X_test = ngram_vectorizer.transform(test_text)
+best_c = Logistic_Regression.get_best_hyperparameter(X_train, y_train, y_val, X_val)
+final_ngram = LogisticRegression(C=best_c)
+final_ngram.fit(X, target)
+final_accuracy = final_ngram.predict(X_test)
+final_accuracy_score = accuracy_score(target_test, final_accuracy)
+print ("Final NGram Accuracy: %s" % final_accuracy_score)
+
+print('\n' * 3)
+print("----------------------------------------------------------")
+print(LocalTime.get(), "  Words selected report: SVM NGram")
+print("----------------------------------------------------------")
+best_c = Linear_SVM.get_best_hyperparameter(X_train, y_train, y_val, X_val)
+final_svm_ngram  = LinearSVC(C=best_c)
+final_svm_ngram.fit(X, target)
+final_accuracy = final_svm_ngram.predict(X_test)
+final_accuracy_score = accuracy_score(target_test, final_accuracy)
+print ("Final SVM Accuracy: %s" % final_accuracy_score)
 #data = Datalook(twitter)
 #data.show()
 
 #Wordcloudz.show(twitter, 'user_description')
+print('\n' * 3)
+print("-----------------------------------------------")
+print(LocalTime.get(), "  General word report")
+print("-----------------------------------------------")
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 print(LocalTime.get(), "5 random tweets with highest positive sentiment polarity: \n")
 cL = twitter.loc[twitter.sentiment==1, ['full_text']].sample(5).values
@@ -85,21 +139,21 @@ for c in cL:
     print()
 
 cL = twitter.loc[twitter.sentiment >0, ['full_text']].values
-positive_sentences = Sentences1.filter(cL)
+positive_sentences = Sentences1.filter1(cL)
 number_positive = len(positive_sentences)
 percentage_positive = "which is {0:.2f}% of all tweets".format((number_positive / len(twitter)) * 100)
 print("-----------------------")
 print(LocalTime.get(), "Number of positive sentiments = ", number_positive, percentage_positive)
 
 cL = twitter.loc[twitter.sentiment < 0, ['full_text']].values
-negative_sentences = Sentences1.filter(cL)
+negative_sentences = Sentences1.filter1(cL)
 number_negative = len(negative_sentences)
 percentage_negative = "which is {0:.2f}% of all tweets".format((number_negative / len(twitter)) * 100)
 print("-----------------------")
 print(LocalTime.get(), "Number of negative sentiments = ", number_negative, percentage_negative)
 
 cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
-neutral_sentences = Sentences1.filter(cL)
+neutral_sentences = Sentences1.filter1(cL)
 number_neutral = len(neutral_sentences)
 percentage_neutral = "which is {0:.2f}% of all tweets".format((number_neutral / len(twitter)) * 100)
 print("-----------------------")
