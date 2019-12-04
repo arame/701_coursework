@@ -126,8 +126,8 @@ final_accuracy = final_svm_ngram.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final SVM Accuracy: %s" % final_accuracy_score)
 
-X_val, y_val = make_blobs(n_samples=50, centers=2,
-                  random_state=0, cluster_std=0.60)
+#X_val1, y_val1 = make_blobs(n_samples=50, centers=2,
+#                  random_state=0, cluster_std=0.60)
 #plt.scatter(X_val[:, 0], X_val[:, 1], c=y_val, s=50, cmap='autumn')
 #data = Datalook(twitter)
 #data.show()
