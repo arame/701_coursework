@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from wordcloud1 import Wordcloudz
 from word_processing import Word_Processing1
 from gensim.models.word2vec import Word2Vec
@@ -10,6 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from sklearn.datasets.samples_generator import make_blobs
 import re
 import math
 import matplotlib
@@ -123,6 +125,10 @@ final_svm_ngram.fit(X, target)
 final_accuracy = final_svm_ngram.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final SVM Accuracy: %s" % final_accuracy_score)
+
+X_val, y_val = make_blobs(n_samples=50, centers=2,
+                  random_state=0, cluster_std=0.60)
+#plt.scatter(X_val[:, 0], X_val[:, 1], c=y_val, s=50, cmap='autumn')
 #data = Datalook(twitter)
 #data.show()
 
