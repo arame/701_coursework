@@ -55,8 +55,7 @@ train_text = Sentences1.filter(train['full_text'])
 test_text = Sentences1.filter(test['full_text'])
 target = np.where(train.sentiment > 0, 1, 0)
 target_test = np.where(test.sentiment > 0, 1, 0)
-#train_text = train['full_text']
-#test_text = test['full_text']
+
 print("-----------------------")
 print("Train and test data divided")
 print("Train data = ", train.shape)
@@ -70,7 +69,7 @@ X_test = cv.transform(test_text)
 X_train, X_val, y_train, y_val = train_test_split(
     X, target, train_size = 0.75
 )
-print('\n' * 3)
+print('\n' * 2)
 print("---------------------------------------------------")
 print(LocalTime.get(), "  Words selected report")
 print("---------------------------------------------------")
@@ -83,8 +82,7 @@ final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final Accuracy: %s" % final_accuracy_score)
 
 feature_to_coef = {
-    word: coef for word, coef in zip(
-        cv.get_feature_names(), final_model.coef_[0]
+    word: coef for word, coef in zip(cv.get_feature_names(), final_model.coef_[0]
     )
 }
 print("-----------------------------------------------")
@@ -101,7 +99,7 @@ for best_negative in sorted(
     key=lambda x: x[1])[:5]:
     print (best_negative)
 
-print('\n' * 3)
+print('\n' * 2)
 print("----------------------------------------------------------")
 print(LocalTime.get(), "  Words selected report: NGram")
 print("----------------------------------------------------------")
@@ -114,8 +112,9 @@ final_ngram.fit(X, target)
 final_accuracy = final_ngram.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final NGram Accuracy: %s" % final_accuracy_score)
+#print ("Final Accuracy: %s" % final_accuracy_score)
 
-print('\n' * 3)
+print('\n' * 2)
 print("----------------------------------------------------------")
 print(LocalTime.get(), "  Words selected report: SVM NGram")
 print("----------------------------------------------------------")
@@ -133,7 +132,7 @@ print ("Final SVM Accuracy: %s" % final_accuracy_score)
 #data.show()
 
 #Wordcloudz.show(twitter, 'user_description')
-print('\n' * 3)
+print('\n' * 2)
 print("-----------------------------------------------")
 print(LocalTime.get(), "  General word report")
 print("-----------------------------------------------")

@@ -12,6 +12,7 @@ class Linear_SVM:
             svm.fit(X_train, y_train)
             accuracy_ = accuracy_score(y_val, svm.predict(X_val))
             if accuracy_ > best_accuracy:
+                best_accuracy = accuracy_
                 best_c = c
             print ("---SVM Accuracy for C=%s: %s" % (c, accuracy_))
 

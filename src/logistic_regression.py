@@ -12,6 +12,7 @@ class Logistic_Regression:
             lr.fit(X_train, y_train)
             accuracy_ = accuracy_score(y_val, lr.predict(X_val))
             if accuracy_ > best_accuracy:
+                best_accuracy = accuracy_
                 best_c = c
             print ("---Accuracy for C=%s: %s" % (c, accuracy_))
 
