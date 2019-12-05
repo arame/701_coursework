@@ -80,25 +80,58 @@ final_model.fit(X, target)
 final_accuracy = final_model.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final Accuracy: %s" % final_accuracy_score)
-
+feature_names = zip(cv.get_feature_names(), final_model.coef_[0])
 feature_to_coef = {
-    word: coef for word, coef in zip(cv.get_feature_names(), final_model.coef_[0]
-    )
+    word: coef for word, coef in feature_names
 }
+itemz = feature_to_coef.items()
+list_positive = sorted(
+    itemz, 
+    key=lambda x: x[1], 
+    reverse=True)[:5]
 print("-----------------------------------------------")
 print(LocalTime.get(), "--- Most popular positve words")
-for best_positive in sorted(
-    feature_to_coef.items(), 
-    key=lambda x: x[1], 
-    reverse=True)[:5]:
+for best_positive in list_positive:
     print (best_positive)
 print("-----------------------------------------------")
 print(LocalTime.get(), "--- Most popular negative words")
-for best_negative in sorted(
-    feature_to_coef.items(), 
-    key=lambda x: x[1])[:5]:
+list_negative = sorted(
+    itemz, 
+    key=lambda x: x[1])[:5]
+for best_negative in list_negative:
     print (best_negative)
 
+print('\n' * 2)
+print("----------------------------------------------------------")
+print(LocalTime.get(), "  Words selected report: SVM ")
+print("----------------------------------------------------------")
+best_c = Linear_SVM.get_best_hyperparameter(X_train, y_train, y_val, X_val)
+final_svm  = LinearSVC(C=best_c)
+final_svm.fit(X, target)
+final_accuracy = final_svm.predict(X_test)
+final_accuracy_score = accuracy_score(target_test, final_accuracy)
+print ("Final SVM Accuracy: %s" % final_accuracy_score)
+feature_names = zip(cv.get_feature_names(), final_model.coef_[0])
+feature_to_coef = {
+    word: coef for word, coef in feature_names
+}
+itemz = feature_to_coef.items()
+list_positive = sorted(
+    itemz, 
+    key=lambda x: x[1], 
+    reverse=True)[:5]
+print("-----------------------------------------------")
+print(LocalTime.get(), "--- Most popular positve words")
+for best_positive in list_positive:
+    print (best_positive)
+print("-----------------------------------------------")
+print(LocalTime.get(), "--- Most popular negative words")
+list_negative = sorted(
+    itemz, 
+    key=lambda x: x[1])[:5]
+for best_negative in list_negative:
+    print (best_negative)
+    
 print('\n' * 2)
 print("----------------------------------------------------------")
 print(LocalTime.get(), "  Words selected report: NGram")
@@ -112,18 +145,28 @@ final_ngram.fit(X, target)
 final_accuracy = final_ngram.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final NGram Accuracy: %s" % final_accuracy_score)
-#print ("Final Accuracy: %s" % final_accuracy_score)
+feature_names = zip(cv.get_feature_names(), final_ngram.coef_[0])
+feature_to_coef = {
+    word: coef for word, coef in feature_names
+}
+itemz = feature_to_coef.items()
+list_positive = sorted(
+    itemz, 
+    key=lambda x: x[1], 
+    reverse=True)
+print("-----------------------------------------------")
+print(LocalTime.get(), "--- Most popular positve words")
+for best_positive in list_positive[:5]:
+    print (best_positive)
+print("-----------------------------------------------")
+print(LocalTime.get(), "--- Most popular negative words")
+list_negative = sorted(
+    itemz, 
+    key=lambda x: x[1])
+for best_negative in list_negative[:5]:
+    print (best_negative)
 
-print('\n' * 2)
-print("----------------------------------------------------------")
-print(LocalTime.get(), "  Words selected report: SVM NGram")
-print("----------------------------------------------------------")
-best_c = Linear_SVM.get_best_hyperparameter(X_train, y_train, y_val, X_val)
-final_svm_ngram  = LinearSVC(C=best_c)
-final_svm_ngram.fit(X, target)
-final_accuracy = final_svm_ngram.predict(X_test)
-final_accuracy_score = accuracy_score(target_test, final_accuracy)
-print ("Final SVM Accuracy: %s" % final_accuracy_score)
+
 
 #X_val1, y_val1 = make_blobs(n_samples=50, centers=2,
 #                  random_state=0, cluster_std=0.60)
