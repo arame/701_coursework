@@ -133,38 +133,40 @@ for best_negative in list_negative:
     print (best_negative)
     
 print('\n' * 2)
-print("----------------------------------------------------------")
-print(LocalTime.get(), "  Words selected report: NGram")
-print("----------------------------------------------------------")
-ngram_vectorizer = CountVectorizer(binary=True, ngram_range=(1, 2))
-X = ngram_vectorizer.fit_transform(train_text)
-X_test = ngram_vectorizer.transform(test_text)
-best_c = Logistic_Regression.get_best_hyperparameter(X_train, y_train, y_val, X_val)
-final_ngram = LogisticRegression(C=best_c)
-final_ngram.fit(X, target)
-final_accuracy = final_ngram.predict(X_test)
-final_accuracy_score = accuracy_score(target_test, final_accuracy)
-print ("Final NGram Accuracy: %s" % final_accuracy_score)
-feature_names = zip(cv.get_feature_names(), final_ngram.coef_[0])
-feature_to_coef = {
-    word: coef for word, coef in feature_names
-}
-itemz = feature_to_coef.items()
-list_positive = sorted(
-    itemz, 
-    key=lambda x: x[1], 
-    reverse=True)
-print("-----------------------------------------------")
-print(LocalTime.get(), "--- Most popular positve words")
-for best_positive in list_positive[:5]:
-    print (best_positive)
-print("-----------------------------------------------")
-print(LocalTime.get(), "--- Most popular negative words")
-list_negative = sorted(
-    itemz, 
-    key=lambda x: x[1])
-for best_negative in list_negative[:5]:
-    print (best_negative)
+
+for no_of_words in range(2,4):
+    print("----------------------------------------------------------------------------")
+    print(LocalTime.get(), "  Words selected report: NGram where n = ", no_of_words)
+    print("----------------------------------------------------------------------------")
+    ngram_vectorizer = CountVectorizer(binary=True, ngram_range=(1, no_of_words))
+    X = ngram_vectorizer.fit_transform(train_text)
+    X_test = ngram_vectorizer.transform(test_text)
+    best_c = Logistic_Regression.get_best_hyperparameter(X_train, y_train, y_val, X_val)
+    final_ngram = LogisticRegression(C=best_c)
+    final_ngram.fit(X, target)
+    final_accuracy = final_ngram.predict(X_test)
+    final_accuracy_score = accuracy_score(target_test, final_accuracy)
+    print ("Final NGram Accuracy: %s" % final_accuracy_score)
+    feature_names = zip(cv.get_feature_names(), final_ngram.coef_[0])
+    feature_to_coef = {
+        word: coef for word, coef in feature_names
+    }
+    itemz = feature_to_coef.items()
+    list_positive = sorted(
+        itemz, 
+        key=lambda x: x[1], 
+        reverse=True)
+    print("-----------------------------------------------")
+    print(LocalTime.get(), "--- Most popular positve words")
+    for best_positive in list_positive[:5]:
+        print (best_positive)
+    print("-----------------------------------------------")
+    print(LocalTime.get(), "--- Most popular negative words")
+    list_negative = sorted(
+        itemz, 
+        key=lambda x: x[1])
+    for best_negative in list_negative[:5]:
+        print (best_negative)
 
 
 
