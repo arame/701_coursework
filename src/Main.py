@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from wordcloud1 import Wordcloudz
 from word_processing import Word_Processing1
+from report_matricies import Report_Matricies
 from gensim.models.word2vec import Word2Vec
 from sklearn.manifold import TSNE
 from sklearn.feature_extraction.text import CountVectorizer
@@ -80,6 +81,9 @@ final_model.fit(X, target)
 final_accuracy = final_model.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final Accuracy: %s" % final_accuracy_score)
+
+Report_Matricies.accuracy(target_test, final_accuracy)
+
 feature_names = zip(cv.get_feature_names(), final_model.coef_[0])
 feature_to_coef = {
     word: coef for word, coef in feature_names
@@ -111,6 +115,7 @@ final_svm.fit(X, target)
 final_accuracy = final_svm.predict(X_test)
 final_accuracy_score = accuracy_score(target_test, final_accuracy)
 print ("Final SVM Accuracy: %s" % final_accuracy_score)
+Report_Matricies.accuracy(target_test, final_accuracy)
 feature_names = zip(cv.get_feature_names(), final_model.coef_[0])
 feature_to_coef = {
     word: coef for word, coef in feature_names
@@ -147,6 +152,7 @@ for no_of_words in range(2,4):
     final_accuracy = final_ngram.predict(X_test)
     final_accuracy_score = accuracy_score(target_test, final_accuracy)
     print ("Final NGram Accuracy: %s" % final_accuracy_score)
+    Report_Matricies.accuracy(target_test, final_accuracy)
     feature_names = zip(cv.get_feature_names(), final_ngram.coef_[0])
     feature_to_coef = {
         word: coef for word, coef in feature_names
