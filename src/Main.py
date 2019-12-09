@@ -137,7 +137,7 @@ list_negative = sorted(
     key=lambda x: x[1])[:5]
 for best_negative in list_negative:
     print (best_negative)
-    
+
 print('\n' * 2)
 
 for no_of_words in range(2,4):

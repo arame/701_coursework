@@ -2,6 +2,7 @@ from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score
 from local_time import LocalTime
 
+# Support Vector Machines (SVM)
 class Linear_SVM:
     @staticmethod
     def get_best_hyperparameter(X_train, y_train, y_val, X_val):
