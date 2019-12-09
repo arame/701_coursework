@@ -8,6 +8,7 @@ class Word_Processing1:
     english_stopwords = set(stopwords.words("english"))
     WORD_REGEX = '[^A-Za-z0-9]+'
     HTTP_REGEX = r"http\S+"
+    DIG_REGEX = r"\d+"
 
     #@staticmethod
     #def clean_line(lines):
@@ -21,6 +22,7 @@ class Word_Processing1:
         word = word.lower()
         word = re.sub(Word_Processing1.WORD_REGEX, '', word)
         word = re.sub(Word_Processing1.HTTP_REGEX, '', word)
+        word = re.sub(Word_Processing1.DIG_REGEX, '', word)
         if word not in Word_Processing1.english_stopwords:
             return word
         else:

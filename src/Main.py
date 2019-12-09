@@ -28,6 +28,7 @@ from sentences1 import Sentences1
 from textblob import TextBlob
 from wordcloud import WordCloud, STOPWORDS
 
+number_we_are_interested_in = 5
 print('\n' * 10)
 print("="*80)
 print("Local current time started :", LocalTime.get())
@@ -93,7 +94,7 @@ itemz = feature_to_coef.items()
 list_positive = sorted(
     itemz, 
     key=lambda x: x[1], 
-    reverse=True)[:5]
+    reverse=True)[:number_we_are_interested_in]
 print("-"*100)
 print(LocalTime.get(), "--- Most popular positve words")
 for best_positive in list_positive:
@@ -102,7 +103,7 @@ print("-"*100)
 print(LocalTime.get(), "--- Most popular negative words")
 list_negative = sorted(
     itemz, 
-    key=lambda x: x[1])[:5]
+    key=lambda x: x[1])[:number_we_are_interested_in]
 for best_negative in list_negative:
     print (best_negative)
 
@@ -125,7 +126,7 @@ itemz = feature_to_coef.items()
 list_positive = sorted(
     itemz, 
     key=lambda x: x[1], 
-    reverse=True)[:5]
+    reverse=True)[:number_we_are_interested_in]
 print("-"*100)
 print(LocalTime.get(), "--- Most popular positve words")
 for best_positive in list_positive:
@@ -134,7 +135,7 @@ print("-"*100)
 print(LocalTime.get(), "--- Most popular negative words")
 list_negative = sorted(
     itemz, 
-    key=lambda x: x[1])[:5]
+    key=lambda x: x[1])[:number_we_are_interested_in]
 for best_negative in list_negative:
     print (best_negative)
 
@@ -165,14 +166,14 @@ for no_of_words in range(2,4):
         reverse=True)
     print("-"*100)
     print(LocalTime.get(), "--- Most popular positve words")
-    for best_positive in list_positive[:5]:
+    for best_positive in list_positive[:number_we_are_interested_in]:
         print (best_positive)
     print("-"*100)
     print(LocalTime.get(), "--- Most popular negative words")
     list_negative = sorted(
         itemz, 
         key=lambda x: x[1])
-    for best_negative in list_negative[:5]:
+    for best_negative in list_negative[:number_we_are_interested_in]:
         print (best_negative)
 
 #data = Datalook(twitter)
