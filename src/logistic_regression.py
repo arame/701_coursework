@@ -17,5 +17,5 @@ class Logistic_Regression:
                 best_c = c
             print ("---Accuracy for C=%s: %s" % (c, accuracy_))
 
-        print(LocalTime.get(), "best hyperparameter c = ", best_c)
+        print(LocalTime.get(), "best hyperparameter for regularisation: c = ", best_c)
         return best_c
