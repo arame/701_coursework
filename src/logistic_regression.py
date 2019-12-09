@@ -5,6 +5,7 @@ from local_time import LocalTime
 class Logistic_Regression:
     @staticmethod
     def get_best_hyperparameter(X_train, y_train, y_val, X_val):
+        # This gets the best hyperparameter for Regularisation
         best_accuracy = 0.0
         best_c = 0.0
         for c in [0.01, 0.05, 0.25, 0.5, 1]:

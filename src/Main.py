@@ -29,9 +29,9 @@ from textblob import TextBlob
 from wordcloud import WordCloud, STOPWORDS
 
 print('\n' * 10)
-print("=========================================================")
+print("="*80)
 print("Local current time started :", LocalTime.get())
-print("=========================================================")
+print("="*80)
 twitter_file = "auspol2019.csv"
 f1 = Files(twitter_file)
 print(LocalTime.get(), twitter_file, " read")
@@ -51,17 +51,18 @@ twitter1 = twitter[twitter.sentiment != 0]
 
 print(LocalTime.get(), "files merged and sentiment rating calculated")
 ####### split the dataset in 2, 80% as training data and 20% as testing data
+full_text_column = "full_text"
 train, test = train_test_split(twitter1, test_size=0.2)
-train_text = Sentences1.filter(train['full_text'])
-test_text = Sentences1.filter(test['full_text'])
+train_text = Sentences1.filter(train[full_text_column])
+test_text = Sentences1.filter(test[full_text_column])
 target = np.where(train.sentiment > 0, 1, 0)
 target_test = np.where(test.sentiment > 0, 1, 0)
 
-print("-----------------------")
+print("-"*100)
 print("Train and test data divided")
 print("Train data = ", train.shape)
 print("Test data = ", test.shape)
-print("-----------------------")
+print("-"*100)
 ######## Vectorise the train and test datasets
 cv = CountVectorizer(binary=True)
 X = cv.fit_transform(train_text)
@@ -71,9 +72,9 @@ X_train, X_val, y_train, y_val = train_test_split(
     X, target, train_size = 0.75
 )
 print('\n' * 2)
-print("---------------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "  Words selected report")
-print("---------------------------------------------------")
+print("-"*100)
 best_c = Logistic_Regression.get_best_hyperparameter(X_train, y_train, y_val, X_val)
 
 final_model = LogisticRegression(C=best_c)
@@ -93,11 +94,11 @@ list_positive = sorted(
     itemz, 
     key=lambda x: x[1], 
     reverse=True)[:5]
-print("-----------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "--- Most popular positve words")
 for best_positive in list_positive:
     print (best_positive)
-print("-----------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "--- Most popular negative words")
 list_negative = sorted(
     itemz, 
@@ -106,9 +107,9 @@ for best_negative in list_negative:
     print (best_negative)
 
 print('\n' * 2)
-print("----------------------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "  Words selected report: SVM ")
-print("----------------------------------------------------------")
+print("-"*100)
 best_c = Linear_SVM.get_best_hyperparameter(X_train, y_train, y_val, X_val)
 final_svm  = LinearSVC(C=best_c)
 final_svm.fit(X, target)
@@ -125,11 +126,11 @@ list_positive = sorted(
     itemz, 
     key=lambda x: x[1], 
     reverse=True)[:5]
-print("-----------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "--- Most popular positve words")
 for best_positive in list_positive:
     print (best_positive)
-print("-----------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "--- Most popular negative words")
 list_negative = sorted(
     itemz, 
@@ -140,9 +141,9 @@ for best_negative in list_negative:
 print('\n' * 2)
 
 for no_of_words in range(2,4):
-    print("----------------------------------------------------------------------------")
+    print("-"*100)
     print(LocalTime.get(), "  Words selected report: NGram where n = ", no_of_words)
-    print("----------------------------------------------------------------------------")
+    print("-"*100)
     ngram_vectorizer = CountVectorizer(binary=True, ngram_range=(1, no_of_words))
     X = ngram_vectorizer.fit_transform(train_text)
     X_test = ngram_vectorizer.transform(test_text)
@@ -162,11 +163,11 @@ for no_of_words in range(2,4):
         itemz, 
         key=lambda x: x[1], 
         reverse=True)
-    print("-----------------------------------------------")
+    print("-"*100)
     print(LocalTime.get(), "--- Most popular positve words")
     for best_positive in list_positive[:5]:
         print (best_positive)
-    print("-----------------------------------------------")
+    print("-"*100)
     print(LocalTime.get(), "--- Most popular negative words")
     list_negative = sorted(
         itemz, 
@@ -174,63 +175,58 @@ for no_of_words in range(2,4):
     for best_negative in list_negative[:5]:
         print (best_negative)
 
-
-
-#X_val1, y_val1 = make_blobs(n_samples=50, centers=2,
-#                  random_state=0, cluster_std=0.60)
-#plt.scatter(X_val[:, 0], X_val[:, 1], c=y_val, s=50, cmap='autumn')
 #data = Datalook(twitter)
 #data.show()
 
-#Wordcloudz.show(twitter, 'user_description')
+#Wordcloudz.show(twitter, full_text_column)
 print('\n' * 2)
-print("-----------------------------------------------")
+print("-"*100)
 print(LocalTime.get(), "  General word report")
-print("-----------------------------------------------")
-twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
+print("-"*100)
+twitter['sentiment'] = twitter[full_text_column].map(lambda text: TextBlob(text).sentiment.polarity)
 print(LocalTime.get(), "5 random tweets with highest positive sentiment polarity: \n")
-cL = twitter.loc[twitter.sentiment==1, ['full_text']].sample(5).values
+cL = twitter.loc[twitter.sentiment==1, [full_text_column]].sample(5).values
 for c in cL:
     print(c[0])
     print()
 
-cL = twitter.loc[twitter.sentiment >0, ['full_text']].values
+cL = twitter.loc[twitter.sentiment >0, [full_text_column]].values
 positive_sentences = Sentences1.filter1(cL)
 number_positive = len(positive_sentences)
 percentage_positive = "which is {0:.2f}% of all tweets".format((number_positive / len(twitter)) * 100)
-print("-----------------------")
+print("-"*100)
 print(LocalTime.get(), "Number of positive sentiments = ", number_positive, percentage_positive)
 
-cL = twitter.loc[twitter.sentiment < 0, ['full_text']].values
+cL = twitter.loc[twitter.sentiment < 0, [full_text_column]].values
 negative_sentences = Sentences1.filter1(cL)
 number_negative = len(negative_sentences)
 percentage_negative = "which is {0:.2f}% of all tweets".format((number_negative / len(twitter)) * 100)
-print("-----------------------")
+print("-"*100)
 print(LocalTime.get(), "Number of negative sentiments = ", number_negative, percentage_negative)
 
-cL = twitter.loc[twitter.sentiment==0, ['full_text']].values
+cL = twitter.loc[twitter.sentiment==0, [full_text_column]].values
 neutral_sentences = Sentences1.filter1(cL)
 number_neutral = len(neutral_sentences)
 percentage_neutral = "which is {0:.2f}% of all tweets".format((number_neutral / len(twitter)) * 100)
-print("-----------------------")
+print("-"*100)
 print(LocalTime.get(), "Number of neutral sentiments = ", number_neutral, percentage_neutral)
-print("-----------------------")
+print("-"*100)
 
 count_of_tweets = len(twitter)
 count_of_retweets = np.sum(twitter.retweet_count)
-print(f"Total number of tweets = ", count_of_tweets)
-print(f"Total number of retweets = ", count_of_retweets)
-print(f"Average number of retweets per tweet = ", count_of_retweets / count_of_tweets)
+print("Total number of tweets = ", count_of_tweets)
+print("Total number of retweets = ", count_of_retweets)
+print("Average number of retweets per tweet = ", count_of_retweets / count_of_tweets)
 tweets_retweeted = twitter.apply(lambda x:True if x["retweet_count"] > 0 else False, axis = 1)
 count_of_tweets_retweeted = len(tweets_retweeted[tweets_retweeted == True])
 print(f"% of tweets retweeted = ", ( count_of_tweets_retweeted / count_of_tweets) * 100)
-print(f"Number of tweets retweeted = ", count_of_tweets_retweeted)
-print(f" Maximum number of retweets {twitter.retweet_count.max()}")
-print(f" Maximum number of favorites {twitter.favorite_count.max()}")
-print("-----------------------")
-print(f"Most retweeted: ", twitter.loc[twitter['retweet_count']==6622.0,'full_text'].values)
-print("-----------------------")
-print(f"Most favourited: ",twitter.loc[twitter['favorite_count']==15559.0,['full_text','user_name','user_description']].values)
-print("=========================================================")
+print("Number of tweets retweeted = ", count_of_tweets_retweeted)
+print(" Maximum number of retweets {twitter.retweet_count.max()}")
+print(" Maximum number of favorites {twitter.favorite_count.max()}")
+print("-"*100)
+print("Most retweeted: ", twitter.loc[twitter['retweet_count']==6622.0,full_text_column].values)
+print("-"*100)
+print("Most favourited: ",twitter.loc[twitter['favorite_count']==15559.0,[full_text_column,'user_name','user_description']].values)
+print("="*80)
 print("Local current time completed :", LocalTime.get())
-print("=========================================================")
+print("="*80)
