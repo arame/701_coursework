@@ -28,6 +28,8 @@ from sentences1 import Sentences1
 from textblob import TextBlob
 from wordcloud import WordCloud, STOPWORDS
 from n_gram import N_Gram
+from svm import SVM
+from params import Params
 
 number_we_are_interested_in = 5
 print('\n' * 10)
@@ -110,77 +112,13 @@ for best_negative in list_negative:
     print (best_negative)
 
 print('\n' * 2)
-print("-"*100)
-print(LocalTime.get(), "  Words selected report: SVM ")
-print("-"*100)
-best_c = Linear_SVM.get_best_hyperparameter(X_train, y_train, y_val, X_val)
-final_svm  = LinearSVC(C=best_c)
-final_svm.fit(X, target)
-final_accuracy = final_svm.predict(X_test)
-final_accuracy_score = accuracy_score(target_test, final_accuracy)
-print ("Final SVM Accuracy: %s" % final_accuracy_score)
-Report_Matricies.accuracy(target_test, final_accuracy)
-feature_names = zip(cv.get_feature_names(), final_model.coef_[0])
-feature_to_coef = {
-    word: coef for word, coef in feature_names
-}
-itemz = feature_to_coef.items()
-list_positive = sorted(
-    itemz, 
-    key=lambda x: x[1], 
-    reverse=True)[:number_we_are_interested_in]
-print("-"*100)
-print(LocalTime.get(), "--- Most popular positve words")
-for best_positive in list_positive:
-    print (best_positive)
-print("-"*100)
-print(LocalTime.get(), "--- Most popular negative words")
-list_negative = sorted(
-    itemz, 
-    key=lambda x: x[1])[:number_we_are_interested_in]
-for best_negative in list_negative:
-    print (best_negative)
-
+######################################### SVM ######################################################
+args = Params(number_we_are_interested_in, X_train, y_train, y_val, X_val, train_text, test_text, target, target_test, cv)
+SVM.calc(args, X, X_test, final_model)
 print('\n' * 2)
-
+######################################## N-Gram ####################################################
 for no_of_words in range(2,4):
-<<<<<<< HEAD
-    N_Gram.calc(no_of_words, X_train, y_train, y_val, X_val, train_text, test_text, cv)
-=======
-    print("-"*100)
-    print(LocalTime.get(), "  Words selected report: NGram where n = ", no_of_words)
-    print("-"*100)
-    ngram_vectorizer = CountVectorizer(binary=True, ngram_range=(1, no_of_words))
-    X = ngram_vectorizer.fit_transform(train_text)
-    X_test = ngram_vectorizer.transform(test_text)
-    best_c = Logistic_Regression.get_best_hyperparameter(X_train, y_train, y_val, X_val)
-    final_ngram = LogisticRegression(C=best_c)
-    final_ngram.fit(X, target)
-    final_accuracy = final_ngram.predict(X_test)
-    final_accuracy_score = accuracy_score(target_test, final_accuracy)
-    print ("Final NGram Accuracy: %s" % final_accuracy_score)
-    Report_Matricies.accuracy(target_test, final_accuracy)
-    feature_names = zip(cv.get_feature_names(), final_ngram.coef_[0])
-    feature_to_coef = {
-        word: coef for word, coef in feature_names
-    }
-    itemz = feature_to_coef.items()
-    list_positive = sorted(
-        itemz, 
-        key=lambda x: x[1], 
-        reverse=True)
-    print("-"*100)
-    print(LocalTime.get(), "--- Most popular positve words")
-    for best_positive in list_positive[:number_we_are_interested_in]:
-        print (best_positive)
-    print("-"*100)
-    print(LocalTime.get(), "--- Most popular negative words")
-    list_negative = sorted(
-        itemz, 
-        key=lambda x: x[1])
-    for best_negative in list_negative[:number_we_are_interested_in]:
-        print (best_negative)
->>>>>>> e09e923d86246933e8c9b254006e065f0906ff2e
+    N_Gram.calc(args, no_of_words)
 
 #data = Datalook(twitter)
 #data.show()
