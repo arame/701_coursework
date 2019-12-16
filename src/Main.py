@@ -40,12 +40,6 @@ twitter_file = "auspol2019.csv"
 f1 = Files(twitter_file)
 print(LocalTime.get(), twitter_file, " read")
 twitter = pd.read_csv(f1.file_path, parse_dates=['created_at','user_created_at'])
-geocode_file = "location_geocode.csv"
-f2 = Files(geocode_file)
-print(LocalTime.get(), geocode_file, " read")
-geocodes = pd.read_csv(f2.file_path)
-twitter = twitter.merge(geocodes, how='inner', left_on='user_location', right_on='name')
-twitter = twitter.drop('name',axis =1)  # 'name' is a duplicate of 'user location' so remove.
 twitter['sentiment'] = twitter['full_text'].map(lambda text: TextBlob(text).sentiment.polarity)
 
 print("twitter number of rows = ", twitter.shape[0])
@@ -53,7 +47,7 @@ print("twitter number of rows = ", twitter.shape[0])
 twitter1 = twitter[twitter.sentiment != 0]
 ####### Set targets to 1 for positive sentiment and 0 for negative sentiment
 
-print(LocalTime.get(), "files merged and sentiment rating calculated")
+print(LocalTime.get(), "sentiment rating calculated")
 ####### split the dataset in 2, 80% as training data and 20% as testing data
 full_text_column = "full_text"
 train, test = train_test_split(twitter1, test_size=0.2)
