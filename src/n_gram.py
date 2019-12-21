@@ -29,7 +29,7 @@ class N_Gram:
         final_accuracy_score = accuracy_score(args.Target_test, final_accuracy)
         print ("Final NGram Accuracy: %s" % final_accuracy_score)
         Report_Matricies.accuracy(args.Target_test, final_accuracy)
-        feature_names = zip(args.Cv.get_feature_names(), final_ngram.coef_[0])
+        feature_names = zip(ngram_vectorizer.get_feature_names(), final_ngram.coef_[0])
         feature_to_coef = {
             word: coef for word, coef in feature_names
         }
